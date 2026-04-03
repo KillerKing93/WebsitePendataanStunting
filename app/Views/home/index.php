@@ -29,6 +29,28 @@
     </div>
 </div>
 
+<!-- Statistik Cepat Publik -->
+<div class="row g-4 mb-5" id="public-stats-container">
+    <div class="col-md-4">
+        <div class="card-premium p-4 text-center border-bottom border-primary border-4 h-100">
+            <h1 class="display-5 fw-bold text-main" id="stat-total">...</h1>
+            <p class="text-muted mb-0">Total Balita Terdata</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-premium p-4 text-center border-bottom border-success border-4 h-100">
+            <h1 class="display-5 fw-bold text-success" id="stat-normal">...</h1>
+            <p class="text-muted mb-0">Tumbuh Kembang Normal</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card-premium p-4 text-center border-bottom border-danger border-4 h-100">
+            <h1 class="display-5 fw-bold text-danger" id="stat-stunting">...</h1>
+            <p class="text-muted mb-0">Berisiko / Stunting</p>
+        </div>
+    </div>
+</div>
+
 <div id="public-map-section" class="mb-5">
     <div class="text-center mb-4">
         <h3 class="fw-bold text-main">Peta Persebaran Publik</h3>
@@ -138,6 +160,18 @@
                 });
             })
             .catch(err => console.error("Error fetching map data: ", err));
+
+        // Fetch Statistics Data
+        fetch('<?= base_url('api/statistics') ?>')
+            .then(response => response.json())
+            .then(stats => {
+                document.getElementById('stat-total').innerText = stats.overall.total_children;
+                document.getElementById('stat-normal').innerText = stats.overall.total_normal;
+                // Gabung berisiko dan stunting ke satu angka warning
+                var badCases = stats.overall.total_berisiko + stats.overall.total_stunting;
+                document.getElementById('stat-stunting').innerText = badCases;
+            })
+            .catch(err => console.error("Error fetching statistics: ", err));
     });
 </script>
 <?= $this->endSection() ?>

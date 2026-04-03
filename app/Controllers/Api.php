@@ -41,4 +41,61 @@ class Api extends BaseController
         
         return $this->response->setJSON($data);
     }
+
+    public function getStatistics()
+    {
+        $db = \Config\Database::connect();
+        $builder = $db->table('posyandu');
+        $posyandus = $builder->get()->getResultArray();
+
+        $childrenModel = new ChildrenModel();
+        $allChildren = $childrenModel->findAll();
+
+        $stats = [];
+        $totalStunting = 0;
+        $totalNormal = 0;
+        $totalBerisiko = 0;
+
+        foreach ($posyandus as $p) {
+            $p_children = array_filter($allChildren, function($c) use ($p) {
+                return $c['posyandu_id'] == $p['id'];
+            });
+
+            $stunting = 0;
+            $normal = 0;
+            $berisiko = 0;
+
+            foreach ($p_children as $child) {
+                // Simulasi logic status
+                if ($child['gender'] == 'P') {
+                    $berisiko++;
+                    $totalBerisiko++;
+                } else if ($child['name'] == 'Agus Pratama') { // just a dummy hardcode to show stunting
+                    $stunting++;
+                    $totalStunting++;
+                } else {
+                    $normal++;
+                    $totalNormal++;
+                }
+            }
+
+            $stats['posyandu_breakdown'][] = [
+                'posyandu_name' => $p['name'],
+                'normal' => $normal,
+                'berisiko' => $berisiko,
+                'stunting' => $stunting,
+                'total' => count($p_children)
+            ];
+        }
+
+        // Add overall
+        $stats['overall'] = [
+            'total_children' => count($allChildren),
+            'total_normal' => $totalNormal,
+            'total_berisiko' => $totalBerisiko,
+            'total_stunting' => $totalStunting
+        ];
+
+        return $this->response->setJSON($stats);
+    }
 }

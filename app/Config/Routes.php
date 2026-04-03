@@ -22,3 +22,4 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
 
 // API Routes
 $routes->get('api/stunting-map', 'Api::stuntingMap');
+$routes->get('api/statistics', 'Api::getStatistics');
