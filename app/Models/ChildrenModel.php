@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class ChildrenModel extends Model
 {
-    protected $table            = 'childrens';
+    protected $table            = 'children';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

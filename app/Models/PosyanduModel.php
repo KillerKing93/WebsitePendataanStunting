@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class PosyanduModel extends Model
 {
-    protected $table            = 'posyandus';
+    protected $table            = 'posyandu';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
