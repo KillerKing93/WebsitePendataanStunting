@@ -6,7 +6,7 @@
         <div class="card-premium p-4 h-100">
             <h4 class="fw-bold mb-4 text-main"><i class="fa-solid fa-child-reaching text-primary me-2"></i> Tambah Data Balita</h4>
             
-            <form action="<?= base_url('children/store') ?>" method="post">
+            <form action="<?= base_url('admin/children/store') ?>" method="post">
                 <div class="mb-3">
                     <label class="form-label fw-medium text-muted">Nama Balita</label>
                     <input type="text" name="name" class="form-control form-control-lg bg-light border-0" required>
