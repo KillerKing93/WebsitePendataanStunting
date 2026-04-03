@@ -41,5 +41,22 @@ abstract class BaseController extends Controller
 
         // Preload any models, libraries, etc, here.
         // $this->session = service('session');
+
+        // Fitur Auto-Hydrate Database (Otomatis Migrate & Seed di Live Server)
+        try {
+            $db = \Config\Database::connect();
+            if (!$db->tableExists('users')) {
+                // Jalankan Migrations
+                $migrate = \Config\Services::migrations();
+                $migrate->latest();
+
+                // Jalankan Seeder
+                $seeder = \Config\Database::seeder();
+                $seeder->call('UserSeeder');
+            }
+        } catch (\Throwable $e) {
+            // Abaikan, biarkan log framework yang menangani jika DB gagal terkoneksi utuh
+            log_message('error', 'Auto-hydrate failed: ' . $e->getMessage());
+        }
     }
 }
