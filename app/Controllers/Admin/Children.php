@@ -30,6 +30,21 @@ class Children extends BaseController
 
     public function store()
     {
+        // Ambil Posyandu terdaftar pertama. Jika kosong (database baru live), buat otomatis Dummy Posyandu
+        $posyanduModel = new \App\Models\PosyanduModel();
+        $posyandu = $posyanduModel->first();
+        if (!$posyandu) {
+            $posyanduModel->insert([
+                'name' => 'Posyandu Melati Pusat',
+                'address' => 'Kelurahan StuntingGIS Demo',
+                'latitude' => -6.200,
+                'longitude' => 106.816
+            ]);
+            $posyanduId = $posyanduModel->getInsertID();
+        } else {
+            $posyanduId = $posyandu['id'];
+        }
+
         // Validasi dan Insert Data
         $data = [
             'name' => $this->request->getPost('name'),
@@ -40,7 +55,7 @@ class Children extends BaseController
             'address' => $this->request->getPost('address'),
             'latitude' => $this->request->getPost('latitude'),
             'longitude' => $this->request->getPost('longitude'),
-            'posyandu_id' => 1, // Defaulting for simple demo
+            'posyandu_id' => $posyanduId, 
         ];
         
         $this->childrenModel->insert($data);
