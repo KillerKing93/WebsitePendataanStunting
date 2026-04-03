@@ -151,7 +151,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link <?= (url_is('children*')) ? 'active' : '' ?>" href="<?= base_url('children') ?>">
+                        <a class="nav-link <?= (url_is('admin/children*')) ? 'active' : '' ?>" href="<?= base_url('admin/children') ?>">
                             <i class="fa-solid fa-users me-1"></i> Data Balita
                         </a>
                     </li>
