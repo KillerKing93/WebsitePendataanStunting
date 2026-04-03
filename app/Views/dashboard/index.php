@@ -74,31 +74,29 @@
             maxZoom: 20
         }).addTo(map);
 
-        // Dummy markers for demo
-        var dummyData = [
-            { lat: -6.190, lng: 106.820, name: "Budi Santoso", status: "Normal", color: "#10B981" },
-            { lat: -6.210, lng: 106.830, name: "Siti Aminah", status: "Berisiko", color: "#F59E0B" },
-            { lat: -6.205, lng: 106.810, name: "Agus Pratama", status: "Stunting", color: "#EF4444" }
-        ];
+        // Fetch dynamic marker data from API
+        fetch('<?= base_url('api/stunting-map') ?>')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(child) {
+                    var customIcon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div style='background-color:${child.color}; width:16px; height:16px; border-radius:50%; border:2px solid white; box-shadow:0 0 10px rgba(0,0,0,0.3); transition: transform 0.2s;'></div>`,
+                        iconSize: [16, 16],
+                        iconAnchor: [8, 8]
+                    });
 
-        dummyData.forEach(function(child) {
-            // Create a custom icon based on color
-            var customIcon = L.divIcon({
-                className: 'custom-div-icon',
-                html: `<div style='background-color:${child.color}; width:16px; height:16px; border-radius:50%; border:2px solid white; box-shadow:0 0 10px rgba(0,0,0,0.3); transition: transform 0.2s;'></div>`,
-                iconSize: [16, 16],
-                iconAnchor: [8, 8]
-            });
-
-            var marker = L.marker([child.lat, child.lng], {icon: customIcon})
-              .addTo(map)
-              .bindPopup(`
-                <div class="text-center p-1">
-                    <h6 class="fw-bold mb-1">${child.name}</h6>
-                    <span class="badge" style="background-color: ${child.color}">${child.status}</span>
-                </div>
-              `);
-        });
+                    var marker = L.marker([child.lat, child.lng], {icon: customIcon})
+                      .addTo(map)
+                      .bindPopup(`
+                        <div class="text-center p-1">
+                            <h6 class="fw-bold mb-1">${child.name}</h6>
+                            <span class="badge" style="background-color: ${child.color}">${child.status}</span>
+                        </div>
+                      `);
+                });
+            })
+            .catch(err => console.error("Error fetching map data: ", err));
     });
 </script>
 <?= $this->endSection() ?>

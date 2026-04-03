@@ -65,22 +65,20 @@
             maxZoom: 20
         }).addTo(map);
 
-        // Heatmap / Cluster / Radius dot to abstract the data so that it's just "points", no name, no NIK.
-        var publicData = [
-            { lat: -6.190, lng: 106.820, color: "#10B981" },
-            { lat: -6.210, lng: 106.830, color: "#F59E0B" },
-            { lat: -6.205, lng: 106.810, color: "#EF4444" },
-            { lat: -6.215, lng: 106.825, color: "#10B981" }
-        ];
-
-        publicData.forEach(function(point) {
-            L.circle([point.lat, point.lng], {
-                color: point.color,
-                fillColor: point.color,
-                fillOpacity: 0.5,
-                radius: 250 // Blur / abstract location by showing generic 250m radius
-            }).addTo(map).bindPopup("<div class='text-center'>Area Terdata</div>");
-        });
+        // Fetch dynamic marker data from API (Blurred / Abstracted for public)
+        fetch('<?= base_url('api/stunting-map') ?>')
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(function(point) {
+                    L.circle([point.lat, point.lng], {
+                        color: point.color,
+                        fillColor: point.color,
+                        fillOpacity: 0.5,
+                        radius: 250 // Blur / abstract location by showing generic 250m radius
+                    }).addTo(map).bindPopup("<div class='text-center'>Area Terdata</div>");
+                });
+            })
+            .catch(err => console.error("Error fetching map data: ", err));
     });
 </script>
 <?= $this->endSection() ?>

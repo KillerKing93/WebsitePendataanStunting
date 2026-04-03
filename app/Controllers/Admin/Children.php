@@ -17,16 +17,33 @@ class Children extends BaseController
 
     public function index()
     {
-        return view('children/index'); // Will be created later for datatable
+        $data = [
+            'children' => $this->childrenModel->findAll()
+        ];
+        return view('admin/children/index', $data);
     }
 
     public function create()
     {
-        return view('children/create');
+        return view('children/create'); // Form Map (Sudah dibuat)
     }
 
     public function store()
     {
-        // CRUD logic to be implemented
+        // Validasi dan Insert Data
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'nik' => $this->request->getPost('nik'),
+            'birth_date' => $this->request->getPost('birth_date'),
+            'gender' => $this->request->getPost('gender'),
+            'parent_name' => $this->request->getPost('parent_name'),
+            'address' => $this->request->getPost('address'),
+            'latitude' => $this->request->getPost('latitude'),
+            'longitude' => $this->request->getPost('longitude'),
+            'posyandu_id' => 1, // Defaulting for simple demo
+        ];
+        
+        $this->childrenModel->insert($data);
+        return redirect()->to('/admin/children')->with('success', 'Data Balita dan Koordinat berhasil disimpan!');
     }
 }

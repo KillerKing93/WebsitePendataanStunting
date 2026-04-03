@@ -19,3 +19,6 @@ $routes->group('admin', ['filter' => 'auth'], static function ($routes) {
     $routes->get('children/create', 'Admin\Children::create');
     $routes->post('children/store', 'Admin\Children::store');
 });
+
+// API Routes
+$routes->get('api/stunting-map', 'Api::stuntingMap');
