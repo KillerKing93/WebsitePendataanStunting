@@ -34,9 +34,15 @@
         <h3 class="fw-bold text-main">Peta Persebaran Publik</h3>
         <p class="text-muted">Data ini dienkripsi demi menjaga kerahasiaan identitas balita.</p>
     </div>
-    <div class="card-premium p-1 overflow-hidden premium-shadow">
+    <div class="card-premium p-0 overflow-hidden premium-shadow position-relative">
+        <div class="p-3 bg-white border-bottom d-flex justify-content-between align-items-center position-absolute top-0 start-0 w-100" style="z-index: 500;">
+            <h6 class="mb-0 fw-bold"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Peta Publik</h6>
+            <button type="button" class="btn btn-sm btn-dark rounded-pill px-3 shadow-sm d-flex align-items-center" id="btnMyLocation">
+                <i class="fa-solid fa-street-view me-2"></i> Ketahui Posisi Saya
+            </button>
+        </div>
         <!-- Peta Publik Tanpa Identitas Detail -->
-        <div id="public-map" style="height: 500px; width: 100%; border-radius: 14px;"></div>
+        <div id="public-map" style="height: 600px; width: 100%; border-radius: 14px; margin-top: 60px; z-index: 1;"></div>
     </div>
 </div>
 <?= $this->endSection() ?>
@@ -57,13 +63,66 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        var map = L.map('public-map').setView([-6.200000, 106.816666], 12);
+        var map = L.map('public-map', {
+            zoomControl: false
+        }).setView([-6.200000, 106.816666], 12);
         
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
+        
+        // Add Geocoder Search Control
+        var geocoder = L.Control.geocoder({
+            defaultMarkGeocode: true,
+            placeholder: "Cari desa / rute jalan terdekat...",
+            position: 'topleft'
+        }).addTo(map);
+
+        // Styling search bar
+        document.querySelector('.leaflet-control-geocoder').style.boxShadow = '0 5px 15px rgba(0,0,0,0.1)';
+        document.querySelector('.leaflet-control-geocoder').style.border = 'none';
+        document.querySelector('.leaflet-control-geocoder').style.borderRadius = '8px';
+
+        // HTML5 Geolocation (My Location Feature)
+        document.getElementById('btnMyLocation').addEventListener('click', function() {
+            var btn = this;
+            var originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i>Mencari...';
+            btn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+                        
+                        map.setView([lat, lng], 14, {animate: true});
+                        // Opsional: tambah marker lokasi saya
+                        L.marker([lat, lng]).addTo(map).bindPopup("Lokasi Saya saat ini").openPopup();
+
+                        btn.innerHTML = '<i class="fa-solid fa-check text-success me-2"></i>Ditemukan';
+                        setTimeout(() => {
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }, 2500);
+                    },
+                    function(error) {
+                        alert("Gagal mendapatkan lokasi. Pastikan izin lokasi browser Anda aktif.");
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                alert("Browser Anda tidak mendukung fitur Geolocation.");
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        });
 
         // Fetch dynamic marker data from API (Blurred / Abstracted for public)
         fetch('<?= base_url('api/stunting-map') ?>')
